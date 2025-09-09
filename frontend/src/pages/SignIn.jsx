@@ -6,6 +6,9 @@ import { BsEyeSlashFill } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase"; // ✅ Make sure you export `auth` from firebase.js
+
 
 function SignIn () {
   const primaryColor = '#ff4d2d';
@@ -19,19 +22,24 @@ function SignIn () {
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
   const [err,setErr]=useState("");
+  const [loading,setLoading]=useState(false);
   const handleSignIn=async()=>{
+     setLoading(true)
      try {
           const result=await axios.post(`${serverURL}/api/auth/signin`,{
                email,password
           },{withCredentials:true});
           console.log(result)
           setErr("")
+          setLoading(false)
      } catch (error) {
            if (error.response) {
-      console.log("Backend error:", error.response.data.message);
+      setErr( error.response.data.message);
       alert(error.response.data.message); // 👈 show user-friendly message
    } else {
-      console.log("Unexpected error:", error.message);
+      setErr(error?.response?.data?.message)
+      setLoading(false)
+      
    }
      }
   }
@@ -87,8 +95,8 @@ function SignIn () {
                    
                    
                    <button className={`w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200
-                     bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handleSignIn}>
-                    Sign In
+                     bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handleSignIn} disabled={loading}>
+                    {loading?<Clipboard size={20} color='white'/>:"Sign In"}
                    </button>
                    {err && <p className='text-red-500 text-center my-[10px]'>*{err}</p>}
                    

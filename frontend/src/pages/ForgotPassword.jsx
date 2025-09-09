@@ -1,7 +1,6 @@
 
 import axios from "axios";
 
-
 import React, { useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
@@ -14,29 +13,35 @@ function ForgotPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const [err,setErr]=useState("");
+  const [loading,setLoading]=useState(false);
   const serverURL = "http://localhost:8000";
   const handleSendOtp=async()=>{
+       setLoading(true)
        try{
           const result=await axios.post(`${serverURL}/api/auth/send-otp`,{email},
           {withCredentials:true})
           console.log(result)
           setErr("")
           setStep(2)
+          setLoading(false);
        }
        catch(error){
            setErr(error.response.data.message)
+           setLoading(false);
        }
   }
 const handleVerifyOtp=async()=>{
+        setLoading(true)
        try{
           const result=await axios.post(`${serverURL}/api/auth/verify-otp`,{email,otp},
           {withCredentials:true})
           console.log(result)
           setStep(3)
+          setLoading(false);
        }
        catch(error){
            setErr(error.response.data.message)
-           
+           setLoading(false);
        }
   }
 const handleResetPassword=async()=>{
@@ -44,6 +49,7 @@ const handleResetPassword=async()=>{
           alert("Password and Confirm Password must be same")
           return;
        }
+       setLoading(true)
        try{
           const result=await axios.post(`${serverURL}/api/auth/reset-password`,{email,newPassword},
           {withCredentials:true})
@@ -53,6 +59,7 @@ const handleResetPassword=async()=>{
        }
        catch(error){
            setErr(error?.response?.data?.message)
+           setLoading(false);
        }
   }
   return (
@@ -90,9 +97,9 @@ const handleResetPassword=async()=>{
             </div>
             <button
               className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer"
-              onClick={handleSendOtp}
+              onClick={handleSendOtp} disabled={loading}
             >
-              Send OTP
+              {loading?<Clipboard size={20} color='white'/>:"Send OTP"}
             </button>
             {err && <p className='text-red-500 text-center my-[10px]'>*{err}</p>}
           </div>
@@ -133,8 +140,8 @@ const handleResetPassword=async()=>{
             />
           </div>
           
-          <button className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handleResetPassword}>
-            Reset Password 
+          <button className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handleResetPassword} disabled={loading}> 
+           {loading?<Clipboard size={20} color='white'/>:"Reset Password"}
           </button>
           </div>
         }

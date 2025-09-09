@@ -1,11 +1,15 @@
+// src/components/SignUp.js
+
 import React, { useState } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import axios from "axios";
-import { auth } from "../../firebase"; // ✅ Make sure you export `auth` from firebase.js
-import { set } from "mongoose";
+import { auth } from "../../firebase";
+import ClipLoader from "react-spinners/ClipLoader";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 function SignUp() {
   const primaryColor = "#ff4d2d";
@@ -26,7 +30,9 @@ function SignUp() {
   const [emergency, setEmergency] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
-  // 🔹 Signup API call
+
+  const dispatch = useDispatch();
+
   const handleSignUp = async () => {
     if (!fullName || !email || !password) {
       return setErr("Please fill all required fields");
@@ -34,13 +40,17 @@ function SignUp() {
     if (!mobile) {
       return setErr("Mobile number is required");
     }
-    setLoading
+    setErr("");
+    setLoading(true);
+
     try {
       const result = await axios.post(
         `${serverURL}/api/auth/signup`,
         { fullName, email, mobile, password, role, aadhaar, trip, emergency },
         { withCredentials: true }
       );
+
+      dispatch(setUserData(result.data));
       console.log("Signup success:", result.data);
       alert("Account created successfully!");
       navigate("/signin");
@@ -52,42 +62,46 @@ function SignUp() {
         console.log("Unexpected error:", error.message);
         setErr("Something went wrong. Try again!");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🔹 Google Sign-in
   const handleGoogleAuth = async () => {
     if (!mobile || !aadhaar || !trip || !emergency) {
       return setErr("Please fill all the fields before Google Sign-in");
     }
+    setErr("");
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       console.log("Google Sign-in success:", result.user);
 
-      try {
-        const { data } = await axios.post(
-          `${serverURL}/api/auth/google-auth`,
-          {
-            fullName: result.user.displayName,
-            email: result.user.email,
-            role,
-            mobile,
-            aadhaar,
-            trip,
-            emergency,
-          },
-          { withCredentials: true }
-        );
-        console.log("Backend Google Auth success:", data);
-        alert("Signed in with Google successfully!");
-        navigate("/");
-      } catch (error) {
-        setErr(error.response?.data?.message || "Google Auth failed");
-      }
+      const { data } = await axios.post(
+        `${serverURL}/api/auth/google-auth`,
+        {
+          fullName: result.user.displayName,
+          email: result.user.email,
+          role,
+          mobile,
+          aadhaar,
+          trip,
+          emergency,
+        },
+        { withCredentials: true }
+      );
+
+      dispatch(setUserData(data));
+      console.log("Backend Google Auth success:", data);
+      alert("Signed in with Google successfully!");
+      navigate("/");
     } catch (error) {
-      console.log("Google Sign-in error:", error.message);
-      alert("Google Sign-in failed!");
+      if (error.response) {
+        setErr(error.response.data?.message || "Google Auth failed");
+      } else {
+        console.log("Google Sign-in error:", error.message);
+        setErr("Google Sign-in failed!");
+      }
     }
   };
 
@@ -110,7 +124,6 @@ function SignUp() {
           Create your account to get started with exploring the world
         </p>
 
-        {/* Full Name */}
         <InputField
           label="Full Name"
           type="text"
@@ -121,7 +134,6 @@ function SignUp() {
           required
         />
 
-        {/* Email */}
         <InputField
           label="Email"
           type="email"
@@ -132,7 +144,6 @@ function SignUp() {
           required
         />
 
-        {/* Mobile */}
         <InputField
           label="Mobile No."
           type="tel"
@@ -143,11 +154,8 @@ function SignUp() {
           required
         />
 
-        {/* Password */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">
-            Password
-          </label>
+          <label className="block text-gray-700 font-medium mb-1">Password</label>
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -168,7 +176,6 @@ function SignUp() {
           </div>
         </div>
 
-        {/* Aadhaar / Passport */}
         <InputField
           label="Aadhaar / Passport"
           type="text"
@@ -178,7 +185,6 @@ function SignUp() {
           borderColor={borderColor}
         />
 
-        {/* Trip Details */}
         <InputField
           label="Trip Details"
           type="text"
@@ -188,7 +194,6 @@ function SignUp() {
           borderColor={borderColor}
         />
 
-        {/* Emergency Contact */}
         <InputField
           label="Emergency Contact"
           type="text"
@@ -198,7 +203,6 @@ function SignUp() {
           borderColor={borderColor}
         />
 
-        {/* Role */}
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">Role</label>
           <div className="flex gap-2">
@@ -220,19 +224,17 @@ function SignUp() {
           </div>
         </div>
 
-        {/* Signup Button */}
         <button
           type="button"
           className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer"
           onClick={handleSignUp}
+          disabled={loading}
         >
-          Sign Up
+          {loading ? <ClipLoader size={20} color="white" /> : "Sign Up"}
         </button>
 
-        {/* Error message below button */}
         {err && <p className="text-red-500 text-sm mt-2">*{err}</p>}
 
-        {/* Google Sign-in */}
         <button
           type="button"
           className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg cursor-pointer px-4 py-2 transition duration-200 border-gray-200 hover:bg-gray-200"
@@ -254,7 +256,6 @@ function SignUp() {
   );
 }
 
-// 🔹 Reusable input component
 const InputField = ({ label, type, placeholder, value, onChange, borderColor, required }) => (
   <div className="mb-4">
     <label className="block text-gray-700 font-medium mb-1">{label}</label>
