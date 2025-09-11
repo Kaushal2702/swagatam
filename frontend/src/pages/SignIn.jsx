@@ -70,8 +70,8 @@ function SignIn () {
     
   return (
     <div className='min-h-screen w-full flex items-center justify-center p-4'style={{backgroundColor:bgcolor}}>
-        <div className={`bg-white rounded-lg shadow-lg w-full max-w-md p-8 border-[1px]`} style={{border:`1px solid ${borderColor}`}}>
-               <h1 className={`text-3xl font-bold mb-2 `} style={{color:primaryColor}}>Swagatam</h1>
+        <div className={"bg-white rounded-lg shadow-lg w-full max-w-md p-8 border-[1px]"} style={{border:`1px solid ${borderColor}`}}>
+               <h1 className={"text-3xl font-bold mb-2 "} style={{color:primaryColor}}>Swagatam</h1>
                <p className='text-gray-600 mb-8'> Create your account to get started with explore the world</p>
                    
                    {/* Email */}
