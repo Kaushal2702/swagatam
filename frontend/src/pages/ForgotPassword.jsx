@@ -116,7 +116,7 @@ const handleResetPassword=async()=>{
               placeholder="Enter OTP" onChange={(e) => setOtp(e.target.value)} value={otp}
             />
           </div>
-          <button className={`w-full font-semiboldpy-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handleVerifyOtp}>
+          <button className={"w-full font-semiboldpy-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer"} onClick={handleVerifyOtp}>
             verify Otp  
           </button>
           </div>
@@ -140,7 +140,7 @@ const handleResetPassword=async()=>{
             />
           </div>
           
-          <button className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`} onClick={handleResetPassword} disabled={loading}> 
+          <button className={"w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer"} onClick={handleResetPassword} disabled={loading}> 
            {loading?<Clipboard size={20} color='white'/>:"Reset Password"}
           </button>
           </div>
