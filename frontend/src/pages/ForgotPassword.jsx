@@ -4,7 +4,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-
+import { serverURL } from "../App";
 function ForgotPassword() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -14,7 +14,7 @@ function ForgotPassword() {
   const navigate = useNavigate();
   const [err,setErr]=useState("");
   const [loading,setLoading]=useState(false);
-  const serverURL = "http://localhost:8000";
+
   const handleSendOtp=async()=>{
        setLoading(true)
        try{
@@ -126,7 +126,7 @@ const handleResetPassword=async()=>{
 <div className="mb-6">
               <label htmlFor="newPassword" className="w-full  border-gray-700 font-medium mb-1">New Password</label>
             <input
-              type="text"
+              type="password"
               className="w-full border-[1px] border-gray-200 rounded-lg px-3 py-3 focus:outline-none focus:border-orange-500"
               placeholder="Enter New Password" onChange={(e) => setNewPassword(e.target.value)} value={newPassword}
             />
@@ -134,7 +134,7 @@ const handleResetPassword=async()=>{
           <div className="mb-6">
               <label htmlFor="ConfirmPassword" className="w-full  border-gray-700 font-medium mb-1">Confirm Password</label>
             <input
-              type="text"
+              type="password"
               className="w-full border-[1px] border-gray-200 rounded-lg px-3 py-3 focus:outline-none focus:border-orange-500"
               placeholder="Enter Confirm Password" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} required
             />

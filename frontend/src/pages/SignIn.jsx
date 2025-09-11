@@ -17,7 +17,7 @@ function SignIn () {
   const borderColor='#ddd';
   const [showPassword,setShowPassword]=useState(false);
   const navigate=useNavigate();
-  const serverURL = "http://localhost:8000"; 
+   
 
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
